@@ -153,10 +153,11 @@ class DockerSandbox:
         logger.debug(f"Executing command in container: {command}")
         
         try:
+            # Note: exec_run doesn't accept timeout parameter directly
+            # Timeout is handled by the Docker daemon or we can use signal-based timeout
             result = self.container.exec_run(
                 command,
-                workdir=str(self.work_dir),
-                timeout=timeout
+                workdir=str(self.work_dir)
             )
             
             output = result.output.decode('utf-8', errors='replace')

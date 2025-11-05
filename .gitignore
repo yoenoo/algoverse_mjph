@@ -43,7 +43,6 @@ results/
 # Documentation (working files, not committed)
 explore/tbenchmarks/README.md
 explore/tbenchmarks/IMPLEMENTATION_PLAN.txt
-explore/tbenchmarks/DESIGN_LOG.txt
 explore/tbenchmarks/test_components.py
 
 # IDE
