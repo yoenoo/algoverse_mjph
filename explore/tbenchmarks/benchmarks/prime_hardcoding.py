@@ -1,9 +1,10 @@
 """
-Fibonacci Hardcoding Benchmark.
+Prime Hardcoding Benchmark.
 
-Tests reward hacking behaviors on the Fibonacci problem, specifically:
-- Hardcoding: Model hardcodes visible test answers
+Tests reward hacking behaviors on the prime number checker problem, specifically:
+- Hardcoding: Model hardcodes visible test answers (e.g., `if n in [2, 7, 17]: return True`)
 - Overfitting: Model passes visible tests but fails hidden tests
+- Edge case failures: Model doesn't handle edge cases like 0, 1, or negative numbers
 """
 
 from datetime import datetime
@@ -19,17 +20,22 @@ from ..core.results import (
 from ..core.problem import Problem
 from ..core.sandbox import DockerSandbox
 from ..llm_providers.provider import LLMProvider
-from ..problems.fibonacci import create_fibonacci_problem
+from ..problems.prime import create_prime_problem
 from ..detectors.hardcoding import detect_hardcoding
 from ..detectors.overfitting import detect_overfitting
 
 
-class FibonacciHardcodingBenchmark(Benchmark):
+class PrimeHardcodingBenchmark(Benchmark):
     """
-    Benchmark for testing reward hacking on Fibonacci problem.
+    Benchmark for testing reward hacking on prime number checker problem.
     
     Detects hardcoding and overfitting behaviors by comparing
     model performance on visible vs hidden test cases.
+    
+    This problem is particularly effective at catching hardcoding because:
+    - Visible tests show specific primes (2, 7, 17) that could be memorized
+    - Hidden tests include edge cases (0, 1) and different primes (23, 29)
+    - Model may try to hardcode: `if n in [2, 7, 17]: return True`
     """
     
     def __init__(
@@ -38,14 +44,14 @@ class FibonacciHardcodingBenchmark(Benchmark):
         llm_provider: LLMProvider
     ):
         """
-        Initialize Fibonacci hardcoding benchmark.
+        Initialize Prime hardcoding benchmark.
         
         Args:
             permission_level: Permission level to test (PL0 supported, PL1-PL4 to be implemented)
             llm_provider: LLM provider to use
         """
-        # Create fibonacci problem
-        problem = create_fibonacci_problem()
+        # Create prime problem
+        problem = create_prime_problem()
         
         # Initialize base class
         super().__init__(
@@ -102,7 +108,7 @@ class FibonacciHardcodingBenchmark(Benchmark):
         
         # Create benchmark result
         return BenchmarkResult(
-            benchmark_name="fibonacci_hardcoding",
+            benchmark_name="prime_hardcoding",
             permission_level=self.permission_level,
             timestamp=datetime.now().isoformat(),
             problem_name=self.problem.name,

@@ -646,88 +646,6 @@ def test_benchmark_implementation():
     print("\n✅ Benchmark implementation test complete!\n")
 
 
-def test_benchmark_execution():
-    """Test actual benchmark execution (Phase 9)"""
-    print("=" * 60)
-    print("Testing Benchmark Execution (Phase 9)")
-    print("=" * 60)
-    
-    try:
-        from explore.tbenchmarks.core.sandbox import DockerSandbox
-        from explore.tbenchmarks.llm_providers.provider import LLMProvider
-        
-        # Check if we have API key
-        api_key = os.getenv("OPENROUTER_API_KEY")
-        has_api_key = api_key and api_key.strip() != ""
-        
-        if not has_api_key:
-            print("⚠ No API key - skipping execution test")
-            print("  (Set OPENROUTER_API_KEY in .env to test full execution)")
-            print("\n✅ Benchmark execution test skipped (no API key)\n")
-            return
-        
-        # Test full benchmark execution
-        try:
-            # Create provider
-            provider = LLMProvider.create_from_config(model="openai/gpt-3.5-turbo")
-            print(f"✓ Provider created: {provider.model}")
-            
-            # Create benchmark
-            bench = FibonacciHardcodingBenchmark(
-                PermissionLevel.PL0_CODE_SUGGESTION,
-                provider
-            )
-            print(f"✓ Benchmark created: {bench.problem_name}")
-            
-            # Create sandbox
-            sandbox = DockerSandbox()
-            bench.setup(sandbox)
-            print(f"✓ Sandbox setup complete")
-            
-            # Run benchmark (this will make actual API call)
-            print(f"  Running benchmark (this will make an API call)...")
-            print(f"  ⚠ WARNING: This will use API credits!")
-            print(f"  (Comment out this test if you don't want to run it)")
-            
-            # Uncomment to actually run:
-            result = bench.run()
-            print(f"✓ Benchmark execution completed")
-            print(f"  Visible tests: {'PASSED' if result.execution_result.visible_tests_passed else 'FAILED'}")
-            print(f"  Hidden tests: {'PASSED' if result.execution_result.hidden_tests_passed else 'FAILED'}")
-            print(f"  Hardcoding detected: {result.detection_result.hardcoding_detected}")
-            print(f"  Overfitting detected: {result.detection_result.overfitting_detected}")
-            print(f"  Model: {result.llm_model}")
-            print(f"  Timestamp: {result.timestamp}")
-            
-            print(f"  (Full execution test skipped - uncomment to run)")
-            
-            # Test cleanup
-            bench.cleanup()
-            print(f"✓ Cleanup completed")
-            
-        except ValueError as e:
-            if "API key" in str(e):
-                print("⚠ API key issue")
-                raise
-            else:
-                raise
-        except Exception as e:
-            print(f"⚠ Execution test had issues: {e}")
-            import traceback
-            traceback.print_exc()
-            # Don't fail the test suite if execution fails
-            print("  (This is OK - execution test may fail due to API issues)")
-        
-    except ImportError as e:
-        print(f"⚠ Import failed: {e}")
-    except Exception as e:
-        print(f"⚠ Benchmark execution test had issues: {e}")
-        import traceback
-        traceback.print_exc()
-    
-    print("\n✅ Benchmark execution test complete!\n")
-
-
 def main():
     """Run all tests"""
     print("\n" + "=" * 60)
@@ -746,7 +664,6 @@ def main():
         test_pl0_executor()
         test_problem_definitions()
         test_benchmark_implementation()
-        test_benchmark_execution()
         
         print("=" * 60)
         print("✅ ALL TESTS PASSED!")

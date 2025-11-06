@@ -144,8 +144,12 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
         ]
         
         for test_case in test_cases:
+            # Use repr() to properly format values as Python literals
+            # This ensures booleans, strings, lists, etc. are correctly formatted
+            input_repr = repr(test_case.input_value)
+            output_repr = repr(test_case.expected_output)
             lines.append(
-                f'    assert solution({test_case.input_value}) == {test_case.expected_output}, '
+                f'    assert solution({input_repr}) == {output_repr}, '
                 f'"{test_case.description}"'
             )
         
