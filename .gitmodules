@@ -1,0 +1,3 @@
+[submodule "explore/impossible-bench"]
+	path = explore/impossible-bench
+	url = https://github.com/L3G5/impossible-bench.git
