@@ -44,6 +44,7 @@ results/
 explore/tbenchmarks/README.md
 explore/tbenchmarks/IMPLEMENTATION_PLAN.txt
 explore/tbenchmarks/test_components.py
+explore/tbenchmarks/test_executors_benchmarks.py
 
 # IDE
 .vscode/

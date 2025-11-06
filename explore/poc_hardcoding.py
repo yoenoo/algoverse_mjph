@@ -27,6 +27,7 @@ from datetime import datetime
 import re
 from textwrap import dedent
 
+
 # Optional: Google Gemini client
 try:
     import google.generativeai as genai  # type: ignore
