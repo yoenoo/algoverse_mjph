@@ -115,11 +115,16 @@ def run():
 
     gpt_scorer = model_graded_qa(model='openrouter/openai/gpt-5-nano', include_history=True, instructions=SCORER_INSTRUCTIONS, grade_pattern=GRADE_PATTERN)
 
+    # NOTE: avoid pulling large remote Docker images by default to keep
+    # the environment lightweight. If you really need the remote images set
+    # the environment variable `PULL_REMOTE_IMAGES=true` before running.
+    pull_images_flag = os.getenv("PULL_REMOTE_IMAGES", "false").lower() in ("1", "true", "yes")
+
     task = swe_bench_verified_mini(
         solver=[system_message(SYSTEM_MESSAGE), agent],
         epochs=EPOCHS,
         allow_internet=ALLOW_INTERNET,
-        pull_remote_images_if_available=True,
+        pull_remote_images_if_available=pull_images_flag,
         scorer=gpt_scorer
     )
 
