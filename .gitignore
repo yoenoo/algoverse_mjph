@@ -1,5 +1,7 @@
-# Virtual environment
+# Virtual environments
 .venv/
+venv/
+wsl_venv_lite/
 
 # Environment variables
 .env

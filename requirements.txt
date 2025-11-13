@@ -26,3 +26,6 @@ inspect-ai==0.3.144
 inspect-evals @ git+https://github.com/UKGovernmentBEIS/inspect_evals
 python-dotenv==1.2.1
 docker>=6.1.3,<8
+
+# SWE-bench (required for inspect-evals swe_bench tasks)
+swebench>=4.0.0
