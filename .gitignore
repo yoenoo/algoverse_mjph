@@ -35,10 +35,6 @@ htmlcov/
 .tox/
 .nox/
 
-# Logs and results
-logs/
-results/
-*.log
 
 # IDE
 .vscode/
