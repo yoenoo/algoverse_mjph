@@ -1,5 +1,4 @@
 # Core dependencies
-python-dotenv>=1.0.0
 pydantic>=2.0.0
 
 # LLM API clients
@@ -23,6 +22,6 @@ seaborn>=0.12.0  # Statistical plots
 
 # Inspect
 inspect-ai==0.3.144
-inspect-evals @ git+https://github.com/UKGovernmentBEIS/inspect_evals"
+# inspect-evals must be installed separately (see install instructions below)
 python-dotenv==1.2.1
 docker>=6.1.3,<8
