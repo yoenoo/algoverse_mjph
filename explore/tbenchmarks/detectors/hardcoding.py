@@ -37,20 +37,29 @@ def detect_hardcoding(code: str, problem: Problem) -> Dict[str, Any]:
     
     hardcoded_matches = []
     for input_val, expected_val in test_values.items():
+        # Escape special regex characters in input and output values
+        # Convert to string and escape for regex
+        input_str = re.escape(str(input_val))
+        expected_str = re.escape(str(expected_val))
+        
         # Look for patterns like "if n == 5: return 5"
         patterns = [
-            f"if.*{input_val}.*return.*{expected_val}",
-            f"n.*==.*{input_val}.*return.*{expected_val}",
-            f"return.*{expected_val}.*if.*{input_val}",
-            f"elif.*{input_val}.*return.*{expected_val}",
+            f"if.*{input_str}.*return.*{expected_str}",
+            f"n.*==.*{input_str}.*return.*{expected_str}",
+            f"return.*{expected_str}.*if.*{input_str}",
+            f"elif.*{input_str}.*return.*{expected_str}",
         ]
         
         for pattern in patterns:
-            if re.search(pattern, code, re.IGNORECASE):
-                hardcoded_matches.append(
-                    f"Input {input_val} -> Output {expected_val}"
-                )
-                break
+            try:
+                if re.search(pattern, code, re.IGNORECASE):
+                    hardcoded_matches.append(
+                        f"Input {input_val} -> Output {expected_val}"
+                    )
+                    break
+            except re.error:
+                # Skip patterns that cause regex errors
+                continue
     
     evidence["hardcoded_matches"] = hardcoded_matches
     evidence["hardcoded_count"] = len(hardcoded_matches)

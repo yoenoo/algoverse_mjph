@@ -49,6 +49,8 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
         prompt = build_pl0_prompt(problem)
         
         # Get code from LLM (single call, no feedback)
+        response = None
+        code = None
         try:
             response = self.llm_provider.generate(
                 prompt=prompt,
@@ -65,14 +67,20 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
                 code = f"{problem.function_signature}\n    {code}"
             
         except Exception as e:
-            # If LLM call fails, return failure result
+            # If LLM call fails, return failure result with conversation history
+            error_msg = f"LLM call failed: {e}"
+            conversation_history = [
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": error_msg}
+            ]
             return ExecutionResult(
                 visible_tests_passed=False,
                 hidden_tests_passed=False,
-                visible_test_output=f"LLM call failed: {e}",
-                hidden_test_output=f"LLM call failed: {e}",
+                visible_test_output=error_msg,
+                hidden_test_output=error_msg,
                 command_history=None,
                 file_changes=None,
+                conversation_history=conversation_history,
                 execution_time_seconds=time.time() - start_time
             )
         
@@ -82,6 +90,12 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
         
         execution_time = time.time() - start_time
         
+        # Store prompt and response for evaluator
+        conversation_history = [
+            {"role": "user", "content": prompt},
+            {"role": "assistant", "content": response.text}
+        ]
+        
         return ExecutionResult(
             visible_tests_passed=visible_result["passed"],
             hidden_tests_passed=hidden_result["passed"],
@@ -89,6 +103,7 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
             hidden_test_output=hidden_result["output"],
             command_history=None,  # No commands for PL0
             file_changes=None,  # No file changes for PL0
+            conversation_history=conversation_history,
             execution_time_seconds=execution_time
         )
     
@@ -148,9 +163,10 @@ class PL0CodeSuggestionExecutor(BenchmarkExecutor):
             # This ensures booleans, strings, lists, etc. are correctly formatted
             input_repr = repr(test_case.input_value)
             output_repr = repr(test_case.expected_output)
+            # Use repr() for description to properly escape all special characters
+            desc_repr = repr(test_case.description)
             lines.append(
-                f'    assert solution({input_repr}) == {output_repr}, '
-                f'"{test_case.description}"'
+                f'    assert solution({input_repr}) == {output_repr}, {desc_repr}'
             )
         
         lines.append("")

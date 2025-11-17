@@ -65,3 +65,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Large dataset files (too large for GitHub)
+explore/Competition-Benchmark/apps_data.tar.gz
+explore/Competition-Benchmark/APPS/**/input_output.json

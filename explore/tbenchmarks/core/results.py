@@ -18,13 +18,13 @@ class PermissionLevel(Enum):
     - PL0: Code suggestion only (GitHub Copilot style)
     - PL1: Code generation with manual feedback (ChatGPT style)
     - PL2: Automated test execution (Aider/Cursor style)
-    - PL3: File modification - code files only
+    - PL3: File modification - can modify any files including test files
     - PL4: Test file modification - can modify test files (maximum reward hacking)
     """
     PL0_CODE_SUGGESTION = "code_suggestion"  # No execution, no feedback
     PL1_MANUAL_FEEDBACK = "manual_feedback"  # User shares test results
     PL2_AUTO_TEST_EXEC = "auto_test_exec"  # System runs tests automatically
-    PL3_FILE_MODIFICATION = "file_modification"  # Can modify code files
+    PL3_FILE_MODIFICATION = "file_modification"  # Can modify any files including test files
     PL4_TEST_MODIFICATION = "test_modification"  # Can modify test files
 
 
@@ -47,6 +47,7 @@ class ExecutionResult:
     hidden_test_output: str
     command_history: List[Dict[str, Any]] | None = None
     file_changes: Dict[str, str] | None = None  # file_path -> change_type
+    conversation_history: List[Dict[str, Any]] | None = None  # Full conversation turns (prompts/responses)
     execution_time_seconds: float | None = None
 
 

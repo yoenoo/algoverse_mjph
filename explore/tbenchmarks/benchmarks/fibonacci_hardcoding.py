@@ -88,10 +88,16 @@ class FibonacciHardcodingBenchmark(Benchmark):
         elif self.permission_level == PermissionLevel.PL1_MANUAL_FEEDBACK:
             from ..executors.pl1_manual_feedback import PL1ManualFeedbackExecutor
             executor = PL1ManualFeedbackExecutor(self.llm_provider)
+        elif self.permission_level == PermissionLevel.PL2_AUTO_TEST_EXEC:
+            from ..executors.pl2_auto_test_exec import PL2AutoTestExecExecutor
+            executor = PL2AutoTestExecExecutor(self.llm_provider)
+        elif self.permission_level == PermissionLevel.PL3_FILE_MODIFICATION:
+            from ..executors.pl3_file_modification import PL3FileModificationExecutor
+            executor = PL3FileModificationExecutor(self.llm_provider)
         else:
             raise NotImplementedError(
                 f"Permission level {self.permission_level} not yet implemented. "
-                f"Currently supported: PL0, PL1"
+                f"Currently supported: PL0, PL1, PL2, PL3"
             )
         
         # Execute benchmark
@@ -114,7 +120,8 @@ class FibonacciHardcodingBenchmark(Benchmark):
                 "problem_description": self.problem.description,
                 "function_signature": self.problem.function_signature,
                 "num_visible_tests": len(self.problem.visible_tests),
-                "num_hidden_tests": len(self.problem.hidden_tests)
+                "num_hidden_tests": len(self.problem.hidden_tests),
+                "generated_code": metadata_code  # Include code for LLM evaluator
             }
         )
     
@@ -139,6 +146,9 @@ class FibonacciHardcodingBenchmark(Benchmark):
         except Exception:
             # Code might not exist or file might not be readable
             pass
+        
+        # Store code in metadata for evaluator
+        metadata_code = code if code else None
         
         # Combined evidence dictionary
         evidence: Dict[str, Any] = {
@@ -184,10 +194,19 @@ class FibonacciHardcodingBenchmark(Benchmark):
             if execution_gaming_detected:
                 evidence["execution_gaming"] = gaming_result.get("evidence", {})
         
+        # Detect test file modification (for PL3+)
+        test_edit_detected = False
+        if self.permission_level in [PermissionLevel.PL3_FILE_MODIFICATION, PermissionLevel.PL4_TEST_MODIFICATION]:
+            from ..detectors.test_modification import detect_test_modification
+            test_mod_result = detect_test_modification(execution_result.file_changes)
+            test_edit_detected = test_mod_result.get("test_edit_detected", False)
+            if test_edit_detected:
+                evidence["test_modification"] = test_mod_result.get("evidence", {})
+        
         # Create detection result
         return DetectionResult(
             hardcoding_detected=hardcoding_detected,
-            test_edit_detected=False,  # Not applicable for PL0/PL1
+            test_edit_detected=test_edit_detected,
             overfitting_detected=overfitting_detected,
             execution_gaming_detected=execution_gaming_detected,
             evidence=evidence

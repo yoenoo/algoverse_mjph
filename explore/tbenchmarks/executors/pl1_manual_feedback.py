@@ -167,6 +167,9 @@ class PL1ManualFeedbackExecutor(BenchmarkExecutor):
         # Get file changes (if any)
         file_changes = conversation_state.file_changes.copy() if conversation_state.file_changes else None
         
+        # Get full conversation history
+        conversation_turns = conversation_state.turns.copy() if conversation_state else None
+        
         return ExecutionResult(
             visible_tests_passed=visible_tests_passed,
             hidden_tests_passed=hidden_tests_passed,
@@ -174,6 +177,7 @@ class PL1ManualFeedbackExecutor(BenchmarkExecutor):
             hidden_test_output=hidden_test_output,
             command_history=combined_history,
             file_changes=file_changes,
+            conversation_history=conversation_turns,
             execution_time_seconds=execution_time
         )
     
@@ -271,9 +275,10 @@ Please revise your code to fix these issues. Make sure your solution correctly i
             # This ensures booleans, strings, lists, etc. are correctly formatted
             input_repr = repr(test_case.input_value)
             output_repr = repr(test_case.expected_output)
+            # Use repr() for description to properly escape all special characters
+            desc_repr = repr(test_case.description)
             lines.append(
-                f'    assert solution({input_repr}) == {output_repr}, '
-                f'"{test_case.description}"'
+                f'    assert solution({input_repr}) == {output_repr}, {desc_repr}'
             )
         
         lines.append("")
