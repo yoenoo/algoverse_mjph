@@ -22,6 +22,7 @@ seaborn>=0.12.0  # Statistical plots
 
 # Inspect
 inspect-ai==0.3.144
-# inspect-evals must be installed separately (see install instructions below)
+inspect-evals @ git+https://github.com/UKGovernmentBEIS/inspect_evals
 python-dotenv==1.2.1
 docker>=6.1.3,<8
+swebench>=4.1.0
